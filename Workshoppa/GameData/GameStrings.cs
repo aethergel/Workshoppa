@@ -49,5 +49,7 @@ internal sealed class GameStrings
         static WorkshopDialogue IExcelRow<WorkshopDialogue>.Create(ExcelPage page, uint offset,
             uint row) =>
             new(page, offset, row);
+        public ExcelPage ExcelPage => page;
+        public uint RowOffset => offset;
     }
 }
