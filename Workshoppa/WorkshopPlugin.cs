@@ -71,7 +71,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
         _workshopCache = new WorkshopCache(dataManager, _pluginLog);
         _gameStrings = new(dataManager, _pluginLog);
 
-        _mainWindow = new(this, _pluginInterface, _clientState, _configuration, _workshopCache,
+        _mainWindow = new(this, _pluginInterface, _clientState, _objectTable, _configuration, _workshopCache,
             new IconCache(textureProvider), _chatGui, new RecipeTree(dataManager, _pluginLog), _pluginLog);
         _windowSystem.AddWindow(_mainWindow);
         _configWindow = new(_pluginInterface, _configuration);

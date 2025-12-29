@@ -16,21 +16,21 @@
       },
       "ECommons": {
         "type": "Direct",
-        "requested": "[3.1.0.1, )",
-        "resolved": "3.1.0.1",
-        "contentHash": "FFpTsFd3jZMAX8becFBr/yPlKwkZT0PpuH3KGKPwTMQhtTJfvz4w6exiZmNwk5fuar5FhCDxjpb5BYsq87JsbQ=="
+        "requested": "[3.1.0.10, )",
+        "resolved": "3.1.0.10",
+        "contentHash": "afgAdXz9ykESACvgssr9PXsPb8i7ZwSyqw58IGzgURUxkH8Hm1qIxwzybLDE5Eo8BXr4nESGqcRqEpbviH4/3g=="
       },
       "JetBrains.Annotations": {
         "type": "Transitive",
-        "resolved": "2024.3.0",
-        "contentHash": "ox5pkeLQXjvJdyAB4b2sBYAlqZGLh3PjSnP1bQNVx72ONuTJ9+34/+Rq91Fc0dG29XG9RgZur9+NcP4riihTug=="
+        "resolved": "2025.2.4",
+        "contentHash": "TwbgxAkXxY+vNEhNVx/QXjJ4vqxmepOjsgRvvImQPbHkHMMb4W+ahL3laMsxXKtNT7iMy+E1B3xkqao2hf1n3A=="
       },
       "llib": {
         "type": "Project",
         "dependencies": {
-          "DalamudPackager": "[14.0.0, )",
-          "ECommons": "[3.1.0.1, )",
-          "JetBrains.Annotations": "[2024.3.0, )"
+          "DalamudPackager": "[14.0.1, )",
+          "ECommons": "[3.1.0.10, )",
+          "JetBrains.Annotations": "[2025.2.4, )"
         }
       }
     }
