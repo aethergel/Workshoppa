@@ -32,7 +32,7 @@ partial class WorkshopPlugin
             (FFXIVClientStructs.FFXIV.Client.Game.Object.GameObject*)obj.Address, false);
     }
 
-    private float GetDistanceToEventObject(IReadOnlyList<uint> npcIds, out IGameObject? o)
+    private static float GetDistanceToEventObject(IReadOnlyList<uint> npcIds, out IGameObject? o)
     {
         Vector3? localPlayerPosition = Service._objectTable.LocalPlayer?.Position;
         if (localPlayerPosition != null)
@@ -57,7 +57,7 @@ partial class WorkshopPlugin
         return float.MaxValue;
     }
 
-    private unsafe AtkUnitBase* GetCompanyCraftingLogAddon()
+    private static unsafe AtkUnitBase* GetCompanyCraftingLogAddon()
     {
         if (Service._gameGui.TryGetAddonByName<AtkUnitBase>("CompanyCraftRecipeNoteBook", out var addon) &&
             LAddon.IsAddonReady(addon))

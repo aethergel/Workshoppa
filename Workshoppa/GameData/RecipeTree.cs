@@ -175,17 +175,17 @@ internal sealed class RecipeTree
             .ToList();
     }
 
-    private Recipe? GetFirstRecipeForItem(uint itemId)
+    private static Recipe? GetFirstRecipeForItem(uint itemId)
     {
         return Service._dataManager.GetExcelSheet<Recipe>().FirstOrDefault(x => x.RowId > 0 && x.ItemResult.RowId == itemId);
     }
 
-    private GatheringItem? GetGatheringItem(uint itemId)
+    private static GatheringItem? GetGatheringItem(uint itemId)
     {
         return Service._dataManager.GetExcelSheet<GatheringItem>().FirstOrDefault(x => x.RowId > 0 && x.Item.RowId == itemId);
     }
 
-    private RetainerTaskNormal? GetVentureItem(uint itemId)
+    private static RetainerTaskNormal? GetVentureItem(uint itemId)
     {
         return Service._dataManager.GetExcelSheet<RetainerTaskNormal>()
             .FirstOrDefault(x => x.RowId > 0 && x.Item.RowId == itemId);

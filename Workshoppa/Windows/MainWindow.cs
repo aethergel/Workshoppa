@@ -59,7 +59,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
     public bool NearFabricationStation { get; set; }
     public ButtonState State { get; set; } = ButtonState.None;
 
-    private bool IsDiscipleOfHand =>
+    private static bool IsDiscipleOfHand =>
         Service._objectTable.LocalPlayer != null && Service._objectTable.LocalPlayer.ClassJob.RowId is >= 8 and <= 15;
 
     public WindowConfig WindowConfig => _configuration.MainWindowConfig;
@@ -146,6 +146,8 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
 
                 ImGui.EndDisabled();
             }
+
+            icon?.Dispose();
         }
         else
         {
@@ -190,6 +192,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                 ImGui.Image(icon.Handle, new Vector2(ImGui.GetFrameHeight()));
                 ImGui.SameLine(0, ImGui.GetStyle().ItemInnerSpacing.X);
             }
+            
 
             ImGui.SetNextItemWidth(Math.Max(100 * ImGui.GetIO().FontGlobalScale, 4 * (ImGui.GetFrameHeight() + ImGui.GetStyle().FramePadding.X)));
             int quantity = item.Quantity;
@@ -206,6 +209,8 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                 if (ImGui.MenuItem($"Remove {craft.Name}"))
                     itemToRemove = item;
             }
+
+            icon?.Dispose();
         }
 
         if (itemToRemove != null)
@@ -248,6 +253,8 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                     ImGui.SetCursorPos(pos);
                     ImGui.Image(icon.Handle, iconSize);
                 }
+
+                icon?.Dispose();
             }
 
             ImGui.EndCombo();

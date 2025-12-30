@@ -30,18 +30,6 @@ public abstract class LWindow : Window
         }
     }
 
-    protected bool IsPinned
-    {
-        get => InternalIsPinned(this);
-        set => InternalIsPinned(this) = value;
-    }
-
-    protected bool IsClickthrough
-    {
-        get => InternalIsClickthrough(this);
-        set => InternalIsClickthrough(this) = value;
-    }
-
     protected int? Alpha
     {
         get
@@ -59,12 +47,6 @@ public abstract class LWindow : Window
             WindowConfig? config = pwc.WindowConfig;
             if (config != null)
             {
-                if (AllowPinning)
-                    IsPinned = config.IsPinned;
-
-                if (AllowClickthrough)
-                    IsClickthrough = config.IsClickthrough;
-
                 Alpha = config.Alpha;
             }
 
