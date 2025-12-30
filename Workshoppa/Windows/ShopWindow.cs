@@ -3,8 +3,8 @@ using System.Numerics;
 using Dalamud.Bindings.ImGui;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using LLib.ImGui;
-using LLib.Shop;
+using Workshoppa.ImGuiwindows;
+using Workshoppa.Shop;
 using Workshoppa.External;
 
 namespace Workshoppa.Windows;

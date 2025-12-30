@@ -9,7 +9,6 @@ using Dalamud.Game.Command;
 using Dalamud.Interface.Windowing;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
-using LLib;
 using Workshoppa.External;
 using Workshoppa.GameData;
 using Workshoppa.Windows;

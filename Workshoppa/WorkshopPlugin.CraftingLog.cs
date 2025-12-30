@@ -2,7 +2,7 @@
 using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using LLib.GameUI;
+using Workshoppa.GameUI;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace Workshoppa;

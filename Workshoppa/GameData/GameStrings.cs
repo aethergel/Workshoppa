@@ -2,10 +2,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Text.RegularExpressions;
 using Dalamud.Plugin.Services;
-using LLib;
 using Lumina.Excel;
 using Lumina.Excel.Sheets;
 using Lumina.Text.ReadOnly;
+using Workshoppa;
 
 namespace Workshoppa.GameData;
 

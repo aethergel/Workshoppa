@@ -3,11 +3,7 @@
         <Version>9.2.3</Version>
         <OutputPath>dist</OutputPath>
     </PropertyGroup>
-
-    <Import Project="..\LLib\LLib.targets"/>
-    <Import Project="..\LLib\RenameZip.targets"/>
-
     <ItemGroup>
-        <ProjectReference Include="..\LLib\LLib.csproj" />
+		<PackageReference Include="ECommons" Version="3.1.0.10" />
     </ItemGroup>
 </Project>

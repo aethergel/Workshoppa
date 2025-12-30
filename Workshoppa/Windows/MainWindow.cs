@@ -13,9 +13,8 @@ using Dalamud.Interface.Utility.Raii;
 using Dalamud.Plugin;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Client.Game;
-using LLib;
-using LLib.ImGui;
 using Workshoppa.GameData;
+using Workshoppa.ImGuiwindows;
 
 namespace Workshoppa.Windows;
 

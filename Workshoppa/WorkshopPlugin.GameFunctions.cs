@@ -12,7 +12,7 @@ using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Client.UI.Agent;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using InteropGenerator.Runtime;
-using LLib.GameUI;
+using Workshoppa.GameUI;
 using Workshoppa.GameData;
 
 namespace Workshoppa;

@@ -5,9 +5,10 @@ using Dalamud.Interface;
 using Dalamud.Interface.Components;
 using Dalamud.Plugin.Services;
 using FFXIVClientStructs.FFXIV.Component.GUI;
-using LLib.GameUI;
-using LLib.Shop.Model;
+using Workshoppa.GameUI;
+using Workshoppa.Shop.Model;
 using Workshoppa.External;
+using Workshoppa.ImGuiwindows;
 using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
 
 namespace Workshoppa.Windows;
