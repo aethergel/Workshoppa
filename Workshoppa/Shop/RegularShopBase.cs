@@ -16,21 +16,15 @@ public class RegularShopBase
 {
     private readonly IShopWindow _parentWindow;
     private readonly string _addonName;
-    private readonly IPluginLog _pluginLog;
-    private readonly IGameGui _gameGui;
-    private readonly IAddonLifecycle _addonLifecycle;
 
-    public RegularShopBase(IShopWindow parentWindow, string addonName, IPluginLog pluginLog, IGameGui gameGui, IAddonLifecycle addonLifecycle)
+    public RegularShopBase(IShopWindow parentWindow, string addonName)
     {
         _parentWindow = parentWindow;
         _addonName = addonName;
-        _pluginLog = pluginLog;
-        _gameGui = gameGui;
-        _addonLifecycle = addonLifecycle;
 
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, _addonName, ShopPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PreFinalize, _addonName, ShopPreFinalize);
-        _addonLifecycle.RegisterListener(AddonEvent.PostUpdate, _addonName, ShopPostUpdate);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostSetup, _addonName, ShopPostSetup);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PreFinalize, _addonName, ShopPreFinalize);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostUpdate, _addonName, ShopPostUpdate);
     }
 
     public ItemForSale? ItemForSale { get; set; }
@@ -143,17 +137,17 @@ public class RegularShopBase
         int maxStackSize = DetermineMaxStackSize(ItemForSale.ItemId);
         if (maxStackSize == 0 && !HasFreeInventorySlot())
         {
-            _pluginLog.Warning($"No free inventory slots, can't buy more {ItemForSale.ItemName}");
+            Service._pluginLog.Warning($"No free inventory slots, can't buy more {ItemForSale.ItemName}");
             PurchaseState = null;
             _parentWindow.RestoreExternalPluginState();
         }
         else if (!PurchaseState.IsComplete)
         {
             if (PurchaseState.NextStep <= DateTime.Now &&
-                _gameGui.TryGetAddonByName(_addonName, out AtkUnitBase* addonShop))
+                Service._gameGui.TryGetAddonByName(_addonName, out AtkUnitBase* addonShop))
             {
                 int buyNow = Math.Min(PurchaseState.ItemsLeftToBuy, maxStackSize);
-                _pluginLog.Information($"Buying {buyNow}x {ItemForSale.ItemName}");
+                Service._pluginLog.Information($"Buying {buyNow}x {ItemForSale.ItemName}");
 
                 _parentWindow.TriggerPurchase(addonShop, buyNow);
 
@@ -163,7 +157,7 @@ public class RegularShopBase
         }
         else
         {
-            _pluginLog.Information(
+            Service._pluginLog.Information(
                 $"Stopping item purchase (desired = {PurchaseState.DesiredItems}, owned = {PurchaseState.OwnedItems})");
             PurchaseState = null;
             _parentWindow.RestoreExternalPluginState();
@@ -172,9 +166,9 @@ public class RegularShopBase
 
     public void Dispose()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, _addonName, ShopPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PreFinalize, _addonName, ShopPreFinalize);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostUpdate, _addonName, ShopPostUpdate);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostSetup, _addonName, ShopPostSetup);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PreFinalize, _addonName, ShopPreFinalize);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostUpdate, _addonName, ShopPostUpdate);
     }
 
 

@@ -19,18 +19,13 @@ internal sealed class RepairKitWindow : ShopWindow
 {
     private const int DarkMatterCluster6ItemId = 10386;
 
-    private readonly IPluginLog _pluginLog;
     private readonly Configuration _configuration;
 
     public RepairKitWindow(
-        IPluginLog pluginLog,
-        IGameGui gameGui,
-        IAddonLifecycle addonLifecycle,
         Configuration configuration,
         ExternalPluginHandler externalPluginHandler)
-        : base("Repair Kits###WorkshoppaRepairKitWindow", "Shop", pluginLog, gameGui, addonLifecycle, externalPluginHandler)
+        : base("Repair Kits###WorkshoppaRepairKitWindow", "Shop", externalPluginHandler)
     {
-        _pluginLog = pluginLog;
         _configuration = configuration;
     }
 
@@ -46,7 +41,7 @@ internal sealed class RepairKitWindow : ShopWindow
 
         if (addon->AtkValuesCount != 625)
         {
-            _pluginLog.Error($"Unexpected amount of atkvalues for Shop addon ({addon->AtkValuesCount})");
+            Service._pluginLog.Error($"Unexpected amount of atkvalues for Shop addon ({addon->AtkValuesCount})");
             Shop.ItemForSale = null;
             return;
         }

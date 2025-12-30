@@ -6,18 +6,13 @@ namespace Workshoppa.External;
 
 internal sealed class ExternalPluginHandler
 {
-    private readonly IDalamudPluginInterface _pluginInterface;
-    private readonly IPluginLog _pluginLog;
     private readonly PandoraIpc _pandoraIpc;
 
     private bool? _pandoraState;
 
-    public ExternalPluginHandler(IDalamudPluginInterface pluginInterface, IPluginLog pluginLog)
+    public ExternalPluginHandler()
     {
-        _pluginInterface = pluginInterface;
-        _pluginLog = pluginLog;
-
-        _pandoraIpc = new PandoraIpc(pluginInterface, pluginLog);
+        _pandoraIpc = new PandoraIpc();
     }
 
     public bool Saved { get; private set; }
@@ -26,11 +21,11 @@ internal sealed class ExternalPluginHandler
     {
         if (Saved)
         {
-            _pluginLog.Information("Not overwriting external plugin state");
+            Service._pluginLog.Information("Not overwriting external plugin state");
             return;
         }
 
-        _pluginLog.Information("Saving external plugin state...");
+        Service._pluginLog.Information("Saving external plugin state...");
         SaveYesAlreadyState();
         SavePandoraState();
         Saved = true;
@@ -38,10 +33,10 @@ internal sealed class ExternalPluginHandler
 
     private void SaveYesAlreadyState()
     {
-        if (_pluginInterface.TryGetData<HashSet<string>>("YesAlready.StopRequests", out var data) &&
+        if (Service._pluginInterface.TryGetData<HashSet<string>>("YesAlready.StopRequests", out var data) &&
             !data.Contains(nameof(Workshoppa)))
         {
-            _pluginLog.Debug("Disabling YesAlready");
+            Service._pluginLog.Debug("Disabling YesAlready");
             data.Add(nameof(Workshoppa));
         }
     }
@@ -49,7 +44,7 @@ internal sealed class ExternalPluginHandler
     private void SavePandoraState()
     {
         _pandoraState = _pandoraIpc.DisableIfNecessary();
-        _pluginLog.Information($"Previous pandora feature state: {_pandoraState}");
+        Service._pluginLog.Information($"Previous pandora feature state: {_pandoraState}");
     }
 
     /// <summary>
@@ -58,10 +53,10 @@ internal sealed class ExternalPluginHandler
     /// </summary>
     public void SaveTextAdvance()
     {
-        if (_pluginInterface.TryGetData<HashSet<string>>("TextAdvance.StopRequests", out var data) &&
+        if (Service._pluginInterface.TryGetData<HashSet<string>>("TextAdvance.StopRequests", out var data) &&
             !data.Contains(nameof(Workshoppa)))
         {
-            _pluginLog.Debug("Disabling textadvance");
+            Service._pluginLog.Debug("Disabling textadvance");
             data.Add(nameof(Workshoppa));
         }
     }
@@ -80,27 +75,27 @@ internal sealed class ExternalPluginHandler
 
     private void RestoreYesAlready()
     {
-        if (_pluginInterface.TryGetData<HashSet<string>>("YesAlready.StopRequests", out var data) &&
+        if (Service._pluginInterface.TryGetData<HashSet<string>>("YesAlready.StopRequests", out var data) &&
             data.Contains(nameof(Workshoppa)))
         {
-            _pluginLog.Debug("Restoring YesAlready");
+            Service._pluginLog.Debug("Restoring YesAlready");
             data.Remove(nameof(Workshoppa));
         }
     }
 
     private void RestorePandora()
     {
-        _pluginLog.Information($"Restoring previous pandora state: {_pandoraState}");
+        Service._pluginLog.Information($"Restoring previous pandora state: {_pandoraState}");
         if (_pandoraState == true)
             _pandoraIpc.Enable();
     }
 
     public void RestoreTextAdvance()
     {
-        if (_pluginInterface.TryGetData<HashSet<string>>("TextAdvance.StopRequests", out var data) &&
+        if (Service._pluginInterface.TryGetData<HashSet<string>>("TextAdvance.StopRequests", out var data) &&
             data.Contains(nameof(Workshoppa)))
         {
-            _pluginLog.Debug("Restoring textadvance");
+            Service._pluginLog.Debug("Restoring textadvance");
             data.Remove(nameof(Workshoppa));
         }
     }

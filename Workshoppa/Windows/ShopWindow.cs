@@ -16,14 +16,11 @@ internal abstract class ShopWindow : LWindow, IShopWindow, IDisposable
     protected ShopWindow(
         string windowName,
         string addonName,
-        IPluginLog pluginLog,
-        IGameGui gameGui,
-        IAddonLifecycle addonLifecycle,
         ExternalPluginHandler externalPluginHandler)
         : base(windowName)
     {
         _externalPluginHandler = externalPluginHandler;
-        Shop = new RegularShopBase(this, addonName, pluginLog, gameGui, addonLifecycle);
+        Shop = new RegularShopBase(this, addonName);
 
         Position = new Vector2(100, 100);
         PositionCondition = ImGuiCond.Always;

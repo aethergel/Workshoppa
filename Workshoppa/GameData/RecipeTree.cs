@@ -8,14 +8,10 @@ namespace Workshoppa.GameData;
 
 internal sealed class RecipeTree
 {
-    private readonly IDataManager _dataManager;
-    private readonly IPluginLog _pluginLog;
     private readonly IReadOnlyList<uint> _shopItemsOnly;
 
-    public RecipeTree(IDataManager dataManager, IPluginLog pluginLog)
+    public RecipeTree()
     {
-        _dataManager = dataManager;
-        _pluginLog = pluginLog;
 
         // probably incomplete, e.g. different housing districts have different shop types
         var shopVendorIds = new uint[]
@@ -31,7 +27,7 @@ internal sealed class RecipeTree
             262211, // Z'ranmaia, upper decks
         };
 
-        _shopItemsOnly = _dataManager.GetSubrowExcelSheet<GilShopItem>()
+        _shopItemsOnly = Service._dataManager.GetSubrowExcelSheet<GilShopItem>()
             .Flatten()
             .Where(x => shopVendorIds.Contains(x.RowId))
             .Select(x => x.Item.RowId)
@@ -65,17 +61,17 @@ internal sealed class RecipeTree
                 AmountCrafted = x.First().AmountCrafted,
             })
             .ToList();
-        _pluginLog.Verbose("Complete craft list:");
+        Service._pluginLog.Verbose("Complete craft list:");
         foreach (var item in completeList)
-            _pluginLog.Verbose($"  {item.TotalQuantity}x {item.Name}");
+            Service._pluginLog.Verbose($"  {item.TotalQuantity}x {item.Name}");
 
         // if a recipe has a specific amount crafted, divide the gathered amount by it
         foreach (var ingredient in completeList.Where(x => x is { AmountCrafted: > 1 }))
         {
-            //_pluginLog.Information($"Fudging {ingredient.Name}");
+            //Service._pluginLog.Information($"Fudging {ingredient.Name}");
             foreach (var part in completeList.Where(x => ingredient.DependsOn.Contains(x.ItemId)))
             {
-                //_pluginLog.Information($"   → {part.Name}");
+                //Service._pluginLog.Information($"   → {part.Name}");
 
                 int unmodifiedQuantity = part.TotalQuantity;
                 int roundedQuantity =
@@ -90,16 +86,16 @@ internal sealed class RecipeTree
         List<RecipeInfo> sortedList = new List<RecipeInfo>();
         while (sortedList.Count < completeList.Count)
         {
-            _pluginLog.Verbose("Sort round");
+            Service._pluginLog.Verbose("Sort round");
             var canBeCrafted = completeList.Where(x =>
                     !sortedList.Contains(x) && x.DependsOn.All(y => sortedList.Any(z => y == z.ItemId)))
                 .ToList();
             foreach (var item in canBeCrafted)
-                _pluginLog.Verbose($"  can craft: {item.TotalQuantity}x {item.Name}");
+                Service._pluginLog.Verbose($"  can craft: {item.TotalQuantity}x {item.Name}");
             if (canBeCrafted.Count == 0)
             {
                 foreach (var item in completeList.Where(x => !sortedList.Contains(x)))
-                    _pluginLog.Warning($"  can't craft: {item.TotalQuantity}x {item.Name} → ({string.Join(", ", item.DependsOn.Where(y => sortedList.All(z => y != z.ItemId)))})");
+                    Service._pluginLog.Warning($"  can't craft: {item.TotalQuantity}x {item.Name} → ({string.Join(", ", item.DependsOn.Where(y => sortedList.All(z => y != z.ItemId)))})");
                 throw new InvalidOperationException("Unable to sort items");
             }
 
@@ -114,7 +110,7 @@ internal sealed class RecipeTree
         List<RecipeInfo> ingredients = new();
         foreach (var material in materials.Where(x => x.Type == Ingredient.EType.Craftable))
         {
-            //_pluginLog.Information($"Looking up recipe for {material.Name}");
+            //Service._pluginLog.Information($"Looking up recipe for {material.Name}");
 
             var recipe = GetFirstRecipeForItem(material.ItemId);
             if (recipe == null)
@@ -132,7 +128,7 @@ internal sealed class RecipeTree
 
                 Recipe? ingredientRecipe = GetFirstRecipeForItem(ingredient.RowId);
 
-                //_pluginLog.Information($"Adding {item.Name}");
+                //Service._pluginLog.Information($"Adding {item.Name}");
                 ingredients.Add(new RecipeInfo
                 {
                     ItemId = ingredient.RowId,
@@ -181,17 +177,17 @@ internal sealed class RecipeTree
 
     private Recipe? GetFirstRecipeForItem(uint itemId)
     {
-        return _dataManager.GetExcelSheet<Recipe>().FirstOrDefault(x => x.RowId > 0 && x.ItemResult.RowId == itemId);
+        return Service._dataManager.GetExcelSheet<Recipe>().FirstOrDefault(x => x.RowId > 0 && x.ItemResult.RowId == itemId);
     }
 
     private GatheringItem? GetGatheringItem(uint itemId)
     {
-        return _dataManager.GetExcelSheet<GatheringItem>().FirstOrDefault(x => x.RowId > 0 && x.Item.RowId == itemId);
+        return Service._dataManager.GetExcelSheet<GatheringItem>().FirstOrDefault(x => x.RowId > 0 && x.Item.RowId == itemId);
     }
 
     private RetainerTaskNormal? GetVentureItem(uint itemId)
     {
-        return _dataManager.GetExcelSheet<RetainerTaskNormal>()
+        return Service._dataManager.GetExcelSheet<RetainerTaskNormal>()
             .FirstOrDefault(x => x.RowId > 0 && x.Item.RowId == itemId);
     }
 

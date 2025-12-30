@@ -58,7 +58,7 @@ partial class WorkshopPlugin
             return;
 
         var craft = GetCurrentCraft();
-        _pluginLog.Information($"Selecting category {craft.Category} and type {craft.Type}");
+        Service._pluginLog.Information($"Selecting category {craft.Category} and type {craft.Type}");
         var selectCategory = stackalloc AtkValue[]
         {
             new() { Type = ValueType.Int, Int = 2 },
@@ -95,12 +95,12 @@ partial class WorkshopPlugin
 
         if (visibleItems.All(x => x.WorkshopItemId != craft.WorkshopItemId))
         {
-            _pluginLog.Error($"Could not find {craft.Name} in current list, is it unlocked?");
+            Service._pluginLog.Error($"Could not find {craft.Name} in current list, is it unlocked?");
             CurrentStage = Stage.RequestStop;
             return;
         }
 
-        _pluginLog.Information($"Selecting craft {craft.WorkshopItemId}");
+        Service._pluginLog.Information($"Selecting craft {craft.WorkshopItemId}");
         var selectCraft = stackalloc AtkValue[]
         {
             new() { Type = ValueType.Int, Int = 1 },

@@ -9,15 +9,13 @@ internal sealed class PandoraIpc
 {
     private const string AutoTurnInFeature = "Auto-select Turn-ins";
 
-    private readonly IPluginLog _pluginLog;
     private readonly ICallGateSubscriber<string, bool?> _getEnabled;
     private readonly ICallGateSubscriber<string, bool, object?> _setEnabled;
 
-    public PandoraIpc(IDalamudPluginInterface pluginInterface, IPluginLog pluginLog)
+    public PandoraIpc()
     {
-        _pluginLog = pluginLog;
-        _getEnabled = pluginInterface.GetIpcSubscriber<string, bool?>("PandorasBox.GetFeatureEnabled");
-        _setEnabled = pluginInterface.GetIpcSubscriber<string, bool, object?>("PandorasBox.SetFeatureEnabled");
+        _getEnabled = Service._pluginInterface.GetIpcSubscriber<string, bool?>("PandorasBox.GetFeatureEnabled");
+        _setEnabled = Service._pluginInterface.GetIpcSubscriber<string, bool, object?>("PandorasBox.SetFeatureEnabled");
     }
 
     public bool? DisableIfNecessary()
@@ -25,7 +23,7 @@ internal sealed class PandoraIpc
         try
         {
             bool? enabled = _getEnabled.InvokeFunc(AutoTurnInFeature);
-            _pluginLog.Information($"Pandora's {AutoTurnInFeature} is {enabled?.ToString() ?? "null"}");
+            Service._pluginLog.Information($"Pandora's {AutoTurnInFeature} is {enabled?.ToString() ?? "null"}");
             if (enabled == true)
                 _setEnabled.InvokeAction(AutoTurnInFeature, false);
 
@@ -33,7 +31,7 @@ internal sealed class PandoraIpc
         }
         catch (IpcNotReadyError e)
         {
-            _pluginLog.Information(e, "Unable to read pandora state");
+            Service._pluginLog.Information(e, "Unable to read pandora state");
             return null;
         }
     }
@@ -46,7 +44,7 @@ internal sealed class PandoraIpc
         }
         catch (IpcNotReadyError e)
         {
-            _pluginLog.Error(e, "Unable to restore pandora state");
+            Service._pluginLog.Error(e, "Unable to restore pandora state");
         }
     }
 }

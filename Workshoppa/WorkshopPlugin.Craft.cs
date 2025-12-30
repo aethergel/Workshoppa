@@ -25,11 +25,11 @@ partial class WorkshopPlugin
             if (addonMaterialDelivery == null)
                 return false;
 
-            _pluginLog.Warning("Material delivery window is open, although unexpected... checking current craft");
+            Service._pluginLog.Warning("Material delivery window is open, although unexpected... checking current craft");
             CraftState? craftState = ReadCraftState(addonMaterialDelivery);
             if (craftState == null || craftState.ResultItem == 0)
             {
-                _pluginLog.Error("Unable to read craft state");
+                Service._pluginLog.Error("Unable to read craft state");
                 _continueAt = DateTime.Now.AddSeconds(1);
                 return false;
             }
@@ -37,12 +37,12 @@ partial class WorkshopPlugin
             var craft = _workshopCache.Crafts.SingleOrDefault(x => x.ResultItem == craftState.ResultItem);
             if (craft == null || craft.WorkshopItemId != _configuration.CurrentlyCraftedItem.WorkshopItemId)
             {
-                _pluginLog.Error("Unable to match currently crafted item with game state");
+                Service._pluginLog.Error("Unable to match currently crafted item with game state");
                 _continueAt = DateTime.Now.AddSeconds(1);
                 return false;
             }
 
-            _pluginLog.Information("Delivering materials for current active craft, switching to delivery");
+            Service._pluginLog.Information("Delivering materials for current active craft, switching to delivery");
             return true;
         }
 
@@ -58,7 +58,7 @@ partial class WorkshopPlugin
         }
         else if (SelectSelectString("advance", 0, s => s.StartsWith("Advance to the next phase of production.", StringComparison.Ordinal)))
         {
-            _pluginLog.Information("Phase is complete");
+            Service._pluginLog.Information("Phase is complete");
 
             _configuration.CurrentlyCraftedItem!.PhasesComplete++;
             _configuration.CurrentlyCraftedItem!.ContributedItemsInCurrentPhase = new();
@@ -69,13 +69,13 @@ partial class WorkshopPlugin
         }
         else if (SelectSelectString("complete", 0, s => s.StartsWith("Complete the construction of", StringComparison.Ordinal)))
         {
-            _pluginLog.Information("Item is almost complete, confirming last cutscene");
+            Service._pluginLog.Information("Item is almost complete, confirming last cutscene");
             CurrentStage = Stage.TargetFabricationStation;
             _continueAt = DateTime.Now.AddSeconds(3);
         }
         else if (SelectSelectString("collect", 0, s => s == "Collect finished product."))
         {
-            _pluginLog.Information("Item is complete");
+            Service._pluginLog.Information("Item is complete");
             CurrentStage = Stage.ConfirmCollectProduct;
             _continueAt = DateTime.Now.AddSeconds(0.25);
         }
@@ -90,14 +90,14 @@ partial class WorkshopPlugin
         CraftState? craftState = ReadCraftState(addonMaterialDelivery);
         if (craftState == null || craftState.ResultItem == 0)
         {
-            _pluginLog.Warning("Could not parse craft state");
+            Service._pluginLog.Warning("Could not parse craft state");
             _continueAt = DateTime.Now.AddSeconds(1);
             return;
         }
 
         if (_configuration.CurrentlyCraftedItem!.UpdateFromCraftState(craftState))
         {
-            _pluginLog.Information("Saving updated current craft information");
+            Service._pluginLog.Information("Saving updated current craft information");
             _pluginInterface.SavePluginConfig(_configuration);
         }
 
@@ -109,7 +109,7 @@ partial class WorkshopPlugin
 
             if (!HasItemInSingleSlot(item.ItemId, item.ItemCountPerStep))
             {
-                _pluginLog.Error(
+                Service._pluginLog.Error(
                     $"Can't contribute item {item.ItemId} to craft, couldn't find {item.ItemCountPerStep}x in a single inventory slot");
 
                 InventoryManager* inventoryManager = InventoryManager.Instance();
@@ -121,10 +121,10 @@ partial class WorkshopPlugin
                 }
 
                 if (itemCount < item.ItemCountPerStep)
-                    _chatGui.PrintError(
+                    Service._chatGui.PrintError(
                         $"[Workshoppa] You don't have the needed {item.ItemCountPerStep}x {item.ItemName} to continue.");
                 else
-                    _chatGui.PrintError(
+                    Service._chatGui.PrintError(
                         $"[Workshoppa] You don't have {item.ItemCountPerStep}x {item.ItemName} in a single stack, you need to merge the items in your inventory manually to continue.");
 
                 CurrentStage = Stage.RequestStop;
@@ -133,7 +133,7 @@ partial class WorkshopPlugin
 
             _externalPluginHandler.SaveTextAdvance();
 
-            _pluginLog.Information($"Contributing {item.ItemCountPerStep}x {item.ItemName}");
+            Service._pluginLog.Information($"Contributing {item.ItemCountPerStep}x {item.ItemName}");
             _contributingItemId = item.ItemId;
             var contributeMaterial = stackalloc AtkValue[]
             {
@@ -152,7 +152,7 @@ partial class WorkshopPlugin
     private unsafe void RequestPostSetup(AddonEvent type, AddonArgs addon)
     {
         var addonRequest = (AddonRequest*)addon.Addon.Address;
-        _pluginLog.Verbose($"{nameof(RequestPostSetup)}: {CurrentStage}, {addonRequest->EntryCount}");
+        Service._pluginLog.Verbose($"{nameof(RequestPostSetup)}: {CurrentStage}, {addonRequest->EntryCount}");
         if (CurrentStage != Stage.OpenRequestItemWindow)
             return;
 
@@ -190,7 +190,7 @@ partial class WorkshopPlugin
 
     private unsafe void RequestPostRefresh(AddonEvent type, AddonArgs addon)
     {
-        _pluginLog.Verbose($"{nameof(RequestPostRefresh)}: {CurrentStage}");
+        Service._pluginLog.Verbose($"{nameof(RequestPostRefresh)}: {CurrentStage}");
         if (CurrentStage != Stage.ConfirmRequestItemWindow)
             return;
 
@@ -220,7 +220,7 @@ partial class WorkshopPlugin
         CraftState? craftState = ReadCraftState(addonMaterialDelivery);
         if (craftState == null || craftState.ResultItem == 0)
         {
-            _pluginLog.Warning("Could not parse craft state");
+            Service._pluginLog.Warning("Could not parse craft state");
             _continueAt = DateTime.Now.AddSeconds(1);
             return;
         }

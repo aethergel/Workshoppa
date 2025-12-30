@@ -25,15 +25,8 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
     private readonly WindowSystem _windowSystem = new WindowSystem(nameof(WorkshopPlugin));
 
     private readonly IDalamudPluginInterface _pluginInterface;
-    private readonly IGameGui _gameGui;
-    private readonly IFramework _framework;
-    private readonly ICondition _condition;
-    private readonly IClientState _clientState;
-    private readonly IObjectTable _objectTable;
     private readonly ICommandManager _commandManager;
-    private readonly IPluginLog _pluginLog;
-    private readonly IAddonLifecycle _addonLifecycle;
-    private readonly IChatGui _chatGui;
+
 
     private readonly Configuration _configuration;
     private readonly ExternalPluginHandler _externalPluginHandler;
@@ -49,43 +42,31 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
     private DateTime _continueAt = DateTime.MinValue;
     private DateTime _fallbackAt = DateTime.MaxValue;
 
-    public WorkshopPlugin(IDalamudPluginInterface pluginInterface, IGameGui gameGui, IFramework framework,
-        ICondition condition, IClientState clientState, IObjectTable objectTable, IDataManager dataManager,
-        ICommandManager commandManager, IPluginLog pluginLog, IAddonLifecycle addonLifecycle, IChatGui chatGui,
-        ITextureProvider textureProvider)
+    public WorkshopPlugin(IDalamudPluginInterface pluginInterface, ICommandManager commandManager)
     {
         _pluginInterface = pluginInterface;
-        _gameGui = gameGui;
-        _framework = framework;
-        _condition = condition;
-        _clientState = clientState;
-        _objectTable = objectTable;
         _commandManager = commandManager;
-        _pluginLog = pluginLog;
-        _addonLifecycle = addonLifecycle;
-        _chatGui = chatGui;
 
-        _externalPluginHandler = new ExternalPluginHandler(_pluginInterface, _pluginLog);
+        _pluginInterface.Create<Service>();
+
+        _externalPluginHandler = new ExternalPluginHandler();
         _configuration = (Configuration?)_pluginInterface.GetPluginConfig() ?? new Configuration();
-        _workshopCache = new WorkshopCache(dataManager, _pluginLog);
-        _gameStrings = new(dataManager, _pluginLog);
+        _workshopCache = new WorkshopCache(Service._dataManager, Service._pluginLog);
+        _gameStrings = new(Service._dataManager, Service._pluginLog);
 
-        _mainWindow = new(this, _pluginInterface, _clientState, _objectTable, _configuration, _workshopCache,
-            new IconCache(textureProvider), _chatGui, new RecipeTree(dataManager, _pluginLog), _pluginLog);
+        _mainWindow = new(this, _configuration, _workshopCache,new IconCache(Service._textureProvider), new RecipeTree());
         _windowSystem.AddWindow(_mainWindow);
         _configWindow = new(_pluginInterface, _configuration);
         _windowSystem.AddWindow(_configWindow);
-        _repairKitWindow = new(_pluginLog, _gameGui, addonLifecycle, _configuration,
-            _externalPluginHandler);
+        _repairKitWindow = new(_configuration,_externalPluginHandler);
         _windowSystem.AddWindow(_repairKitWindow);
-        _ceruleumTankWindow = new(_pluginLog, _gameGui, addonLifecycle, _configuration,
-            _externalPluginHandler, _chatGui);
+        _ceruleumTankWindow = new(_configuration, _externalPluginHandler);
         _windowSystem.AddWindow(_ceruleumTankWindow);
 
         _pluginInterface.UiBuilder.Draw += _windowSystem.Draw;
         _pluginInterface.UiBuilder.OpenMainUi += OpenMainUi;
         _pluginInterface.UiBuilder.OpenConfigUi += _configWindow.Toggle;
-        _framework.Update += FrameworkUpdate;
+        Service._framework.Update += FrameworkUpdate;
         _commandManager.AddHandler("/ws", new CommandInfo(ProcessCommand)
         {
             HelpMessage = "Open UI"
@@ -103,10 +84,10 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
             HelpMessage = "Fill your inventory with a given number of ceruleum tank stacks.",
         });
 
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", SelectYesNoPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Request", RequestPostSetup);
-        _addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "Request", RequestPostRefresh);
-        _addonLifecycle.RegisterListener(AddonEvent.PostUpdate, "ContextIconMenu", ContextIconMenuPostReceiveEvent);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostSetup, "SelectYesno", SelectYesNoPostSetup);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostSetup, "Request", RequestPostSetup);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostRefresh, "Request", RequestPostRefresh);
+        Service._addonLifecycle.RegisterListener(AddonEvent.PostUpdate, "ContextIconMenu", ContextIconMenuPostReceiveEvent);
     }
 
     internal Stage CurrentStage
@@ -116,7 +97,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
         {
             if (_currentStageInternal != value)
             {
-                _pluginLog.Debug($"Changing stage from {_currentStageInternal} to {value}");
+                Service._pluginLog.Debug($"Changing stage from {_currentStageInternal} to {value}");
                 _currentStageInternal = value;
             }
 
@@ -129,11 +110,11 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
 
     private void FrameworkUpdate(IFramework framework)
     {
-        if (!_clientState.IsLoggedIn ||
-            !WorkshopTerritories.Contains(_clientState.TerritoryType) ||
-            _condition[ConditionFlag.BoundByDuty] ||
-            _condition[ConditionFlag.BetweenAreas] ||
-            _condition[ConditionFlag.BetweenAreas51] ||
+        if (!Service._clientState.IsLoggedIn ||
+            !WorkshopTerritories.Contains(Service._clientState.TerritoryType) ||
+            Service._condition[ConditionFlag.BoundByDuty] ||
+            Service._condition[ConditionFlag.BetweenAreas] ||
+            Service._condition[ConditionFlag.BetweenAreas51] ||
             GetDistanceToEventObject(_fabricationStationIds, out var fabricationStation) >= 3f)
         {
             _mainWindow.NearFabricationStation = false;
@@ -250,7 +231,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
                     break;
 
                 default:
-                    _pluginLog.Warning($"Unknown stage {CurrentStage}");
+                    Service._pluginLog.Warning($"Unknown stage {CurrentStage}");
                     break;
             }
         }
@@ -275,7 +256,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
         if (_ceruleumTankWindow.TryParseBuyRequest(arguments, out int missingQuantity))
             _ceruleumTankWindow.StartPurchase(missingQuantity);
         else
-            _chatGui.PrintError($"Usage: {command} <stacks>");
+            Service._chatGui.PrintError($"Usage: {command} <stacks>");
     }
 
     private void ProcessFillCommand(string command, string arguments)
@@ -283,7 +264,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
         if (_ceruleumTankWindow.TryParseFillRequest(arguments, out int missingQuantity))
             _ceruleumTankWindow.StartPurchase(missingQuantity);
         else
-            _chatGui.PrintError($"Usage: {command} <stacks>");
+            Service._chatGui.PrintError($"Usage: {command} <stacks>");
     }
 
     private void OpenMainUi()
@@ -291,10 +272,10 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
 
     public void Dispose()
     {
-        _addonLifecycle.UnregisterListener(AddonEvent.PostUpdate, "ContextIconMenu", ContextIconMenuPostReceiveEvent);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "Request", RequestPostRefresh);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Request", RequestPostSetup);
-        _addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "SelectYesno", SelectYesNoPostSetup);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostUpdate, "ContextIconMenu", ContextIconMenuPostReceiveEvent);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostRefresh, "Request", RequestPostRefresh);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "Request", RequestPostSetup);
+        Service._addonLifecycle.UnregisterListener(AddonEvent.PostSetup, "SelectYesno", SelectYesNoPostSetup);
         _commandManager.RemoveHandler("/fill-tanks");
         _commandManager.RemoveHandler("/buy-tanks");
         _commandManager.RemoveHandler("/workshoppa");
@@ -302,7 +283,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
         _pluginInterface.UiBuilder.Draw -= _windowSystem.Draw;
         _pluginInterface.UiBuilder.OpenConfigUi -= _configWindow.Toggle;
         _pluginInterface.UiBuilder.OpenMainUi -= OpenMainUi;
-        _framework.Update -= FrameworkUpdate;
+        Service._framework.Update -= FrameworkUpdate;
 
         _ceruleumTankWindow.Dispose();
         _repairKitWindow.Dispose();

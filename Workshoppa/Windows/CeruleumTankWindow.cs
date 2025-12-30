@@ -17,26 +17,17 @@ internal sealed class CeruleumTankWindow : ShopWindow
 {
     private const int CeruleumTankItemId = 10155;
 
-    private readonly IPluginLog _pluginLog;
     private readonly Configuration _configuration;
-    private readonly IChatGui _chatGui;
 
     private int _companyCredits;
     private int _buyStackCount;
     private bool _buyPartialStacks = true;
 
     public CeruleumTankWindow(
-        IPluginLog pluginLog,
-        IGameGui gameGui,
-        IAddonLifecycle addonLifecycle,
         Configuration configuration,
-        ExternalPluginHandler externalPluginHandler,
-        IChatGui chatGui)
-        : base("Ceruleum Tanks###WorkshoppaCeruleumTankWindow", "FreeCompanyCreditShop", pluginLog, gameGui,
-            addonLifecycle, externalPluginHandler)
+        ExternalPluginHandler externalPluginHandler)
+        : base("Ceruleum Tanks###WorkshoppaCeruleumTankWindow", "FreeCompanyCreditShop", externalPluginHandler)
     {
-        _pluginLog = pluginLog;
-        _chatGui = chatGui;
         _configuration = configuration;
     }
 
@@ -46,7 +37,7 @@ internal sealed class CeruleumTankWindow : ShopWindow
     {
         if (addon->AtkValuesCount != 170)
         {
-            _pluginLog.Error(
+            Service._pluginLog.Error(
                 $"Unexpected amount of atkvalues for FreeCompanyCreditShop addon ({addon->AtkValuesCount})");
             _companyCredits = 0;
             Shop.ItemForSale = null;
@@ -185,7 +176,7 @@ internal sealed class CeruleumTankWindow : ShopWindow
 
         int tanks = Math.Min((fullStacks + partialStacks + freeInventorySlots) * 999,
             Math.Max(stackCount * 999, (fullStacks + partialStacks) * 999));
-        _pluginLog.Information("T: " + tanks);
+        Service._pluginLog.Information("T: " + tanks);
         int owned = Shop.GetItemCount(CeruleumTankItemId);
         if (tanks <= owned)
             missingQuantity = 0;
@@ -199,17 +190,17 @@ internal sealed class CeruleumTankWindow : ShopWindow
     {
         if (!IsOpen || Shop.ItemForSale == null)
         {
-            _chatGui.PrintError("Could not start purchase, shop window is not open.");
+            Service._chatGui.PrintError("Could not start purchase, shop window is not open.");
             return;
         }
 
         if (quantity <= 0)
         {
-            _chatGui.Print("Not buying ceruleum tanks, you already have enough.");
+            Service._chatGui.Print("Not buying ceruleum tanks, you already have enough.");
             return;
         }
 
-        _chatGui.Print($"Starting purchase of {FormatStackCount(quantity)} ceruleum tanks.");
+        Service._chatGui.Print($"Starting purchase of {FormatStackCount(quantity)} ceruleum tanks.");
         Shop.StartAutoPurchase(quantity);
         Shop.HandleNextPurchaseStep();
     }

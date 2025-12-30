@@ -24,35 +24,23 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
     private static readonly Regex CountAndName = new(@"^(\d{1,5})x?\s+(.*)$", RegexOptions.Compiled);
 
     private readonly WorkshopPlugin _plugin;
-    private readonly IDalamudPluginInterface _pluginInterface;
-    private readonly IClientState _clientState;
-    private readonly IObjectTable _objectTable;
     private readonly Configuration _configuration;
     private readonly WorkshopCache _workshopCache;
     private readonly IconCache _iconCache;
-    private readonly IChatGui _chatGui;
     private readonly RecipeTree _recipeTree;
-    private readonly IPluginLog _pluginLog;
 
     private string _searchString = string.Empty;
     private bool _checkInventory;
     private string _newPresetName = string.Empty;
 
-    public MainWindow(WorkshopPlugin plugin, IDalamudPluginInterface pluginInterface, IClientState clientState, IObjectTable objectTable,
-        Configuration configuration, WorkshopCache workshopCache, IconCache iconCache, IChatGui chatGui,
-        RecipeTree recipeTree, IPluginLog pluginLog)
+    public MainWindow(WorkshopPlugin plugin,Configuration configuration, WorkshopCache workshopCache, IconCache iconCache, RecipeTree recipeTree)
         : base("Workshoppa###WorkshoppaMainWindow")
     {
         _plugin = plugin;
-        _pluginInterface = pluginInterface;
-        _clientState = clientState;
-        _objectTable = objectTable;
         _configuration = configuration;
         _workshopCache = workshopCache;
         _iconCache = iconCache;
-        _chatGui = chatGui;
         _recipeTree = recipeTree;
-        _pluginLog = pluginLog;
 
         Position = new Vector2(100, 100);
         PositionCondition = ImGuiCond.FirstUseEver;
@@ -72,7 +60,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
     public ButtonState State { get; set; } = ButtonState.None;
 
     private bool IsDiscipleOfHand =>
-        _objectTable.LocalPlayer != null && _objectTable.LocalPlayer.ClassJob.RowId is >= 8 and <= 15;
+        Service._objectTable.LocalPlayer != null && Service._objectTable.LocalPlayer.ClassJob.RowId is >= 8 and <= 15;
 
     public WindowConfig WindowConfig => _configuration.MainWindowConfig;
 
@@ -308,7 +296,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                         }
 
                         Save();
-                        _chatGui.Print($"Imported {preset.ItemQueue.Count} items from preset.");
+                        Service._chatGui.Print($"Imported {preset.ItemQueue.Count} items from preset.");
                     }
 
                     ImGui.PopID();
@@ -343,7 +331,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                     });
 
                     Save();
-                    _chatGui.Print($"Saved queue as preset '{_newPresetName}'.");
+                    Service._chatGui.Print($"Saved queue as preset '{_newPresetName}'.");
 
                     _newPresetName = string.Empty;
                 }
@@ -382,7 +370,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                     _configuration.Presets.Remove(preset);
 
                     Save();
-                    _chatGui.Print($"Deleted preset '{preset.Name}'.");
+                    Service._chatGui.Print($"Deleted preset '{preset.Name}'.");
                 }
 
                 ImGui.EndMenu();
@@ -423,13 +411,13 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
             }
             catch (Exception)
             {
-                //_pluginLog.Warning(e, "Unable to extract clipboard text");
+                //Service._pluginLog.Warning(e, "Unable to extract clipboard text");
             }
 
             ImGui.BeginDisabled(fromClipboardItems.Count == 0);
             if (ImGui.MenuItem("Import Queue from Clipboard"))
             {
-                _pluginLog.Information($"Importing {fromClipboardItems.Count} items...");
+                Service._pluginLog.Information($"Importing {fromClipboardItems.Count} items...");
                 int count = 0;
                 foreach (var item in fromClipboardItems)
                 {
@@ -450,7 +438,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                 }
 
                 Save();
-                _chatGui.Print($"Imported {count} items from clipboard.");
+                Service._chatGui.Print($"Imported {count} items from clipboard.");
             }
 
             ImGui.EndDisabled();
@@ -467,7 +455,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                     .Select(x => $"{x.Quantity}x {x.Name}");
                 ImGui.SetClipboardText(string.Join(Environment.NewLine, toClipboardItems));
 
-                _chatGui.Print("Copied queue content to clipboard.");
+                Service._chatGui.Print("Copied queue content to clipboard.");
             }
 
             if (ImGui.MenuItem("Export Material List to Clipboard"))
@@ -475,7 +463,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                 var toClipboardItems = _recipeTree.ResolveRecipes(GetMaterialList()).Where(x => x.Type == Ingredient.EType.Craftable);
                 ImGui.SetClipboardText(string.Join(Environment.NewLine, toClipboardItems.Select(x => $"{x.TotalQuantity}x {x.Name}")));
 
-                _chatGui.Print("Copied material list to clipboard.");
+                Service._chatGui.Print("Copied material list to clipboard.");
             }
 
             if (ImGui.MenuItem("Export Gathered/Venture materials to Clipboard"))
@@ -483,7 +471,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
                 var toClipboardItems = _recipeTree.ResolveRecipes(GetMaterialList()).Where(x => x.Type == Ingredient.EType.Gatherable);
                 ImGui.SetClipboardText(string.Join(Environment.NewLine, toClipboardItems.Select(x => $"{x.TotalQuantity}x {x.Name}")));
 
-                _chatGui.Print("Copied material list to clipboard.");
+               Service._chatGui.Print("Copied material list to clipboard.");
             }
 
             ImGui.EndDisabled();
@@ -509,7 +497,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
 
     private void Save()
     {
-        _pluginInterface.SavePluginConfig(_configuration);
+        Service._pluginInterface.SavePluginConfig(_configuration);
     }
 
     public void Toggle(EOpenReason reason)
@@ -611,7 +599,7 @@ internal sealed class MainWindow : LWindow, IPersistableWindowConfig
 
     private void ShowErrorConditions()
     {
-        if (!_plugin.WorkshopTerritories.Contains(_clientState.TerritoryType))
+        if (!_plugin.WorkshopTerritories.Contains(Service._clientState.TerritoryType))
             ImGui.TextColored(ImGuiColors.DalamudRed, "You are not in the Company Workshop.");
         else if (!NearFabricationStation)
             ImGui.TextColored(ImGuiColors.DalamudRed, "You are not near a Fabrication Station.");

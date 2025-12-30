@@ -31,20 +31,30 @@ public static class LAddon
     public static unsafe bool TryGetAddonByName<T>(this IGameGui gameGui, string addonName, out T* addonPtr)
         where T : unmanaged
     {
-        ArgumentNullException.ThrowIfNull(gameGui);
-        ArgumentException.ThrowIfNullOrEmpty(addonName);
+        try
+        {
+            ArgumentNullException.ThrowIfNull(gameGui);
+            ArgumentException.ThrowIfNullOrEmpty(addonName);
 
-        var a = gameGui.GetAddonByName(addonName);
-        if (!a.IsNull)
-        {
-            addonPtr = (T*)a.Address;
-            return true;
+            var a = gameGui.GetAddonByName(addonName);
+            if (!a.IsNull)
+            {
+                addonPtr = (T*)a.Address;
+                return true;
+            }
+            else
+            {
+                addonPtr = null;
+                return false;
+            }
         }
-        else
+        catch
         {
+            Service._pluginLog.Info("Something was null when it shouldn't be.");
             addonPtr = null;
-            return false;
+            return false; 
         }
+        
     }
 
     public static unsafe bool IsAddonReady(AtkUnitBase* addon)
