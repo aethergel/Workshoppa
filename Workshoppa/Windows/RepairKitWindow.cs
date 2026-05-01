@@ -11,7 +11,7 @@ using Workshoppa.GameUI;
 using Workshoppa.Shop.Model;
 using Workshoppa.External;
 using Workshoppa.ImGuiwindows;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace Workshoppa.Windows;
 
@@ -125,9 +125,9 @@ internal sealed class RepairKitWindow : ShopWindow
     {
         var buyItem = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 0 },
-            new() { Type = ValueType.Int, Int = Shop.ItemForSale!.Position },
-            new() { Type = ValueType.Int, Int = buyNow },
+            new() { Type = AtkValueType.Int, Int = 0 },
+            new() { Type = AtkValueType.Int, Int = Shop.ItemForSale!.Position },
+            new() { Type = AtkValueType.Int, Int = buyNow },
             new() { Type = 0, Int = 0 }
         };
         addonShop->FireCallback(4, buyItem);

@@ -3,7 +3,7 @@ using System.Linq;
 using Dalamud.Game.ClientState.Objects.Types;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Workshoppa.GameUI;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace Workshoppa;
 
@@ -61,13 +61,13 @@ partial class WorkshopPlugin
         Service._pluginLog.Information($"Selecting category {craft.Category} and type {craft.Type}");
         var selectCategory = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 2 },
+            new() { Type = AtkValueType.Int, Int = 2 },
             new() { Type = 0, Int = 0 },
-            new() { Type = ValueType.UInt, UInt = (uint)craft.Category },
-            new() { Type = ValueType.UInt, UInt = craft.Type },
-            new() { Type = ValueType.UInt, Int = 0 },
-            new() { Type = ValueType.UInt, Int = 0 },
-            new() { Type = ValueType.UInt, Int = 0 },
+            new() { Type = AtkValueType.UInt, UInt = (uint)craft.Category },
+            new() { Type = AtkValueType.UInt, UInt = craft.Type },
+            new() { Type = AtkValueType.UInt, Int = 0 },
+            new() { Type = AtkValueType.UInt, Int = 0 },
+            new() { Type = AtkValueType.UInt, Int = 0 },
             new() { Type = 0, Int = 0 }
         };
         addonCraftingLog->FireCallback(8, selectCategory);
@@ -103,11 +103,11 @@ partial class WorkshopPlugin
         Service._pluginLog.Information($"Selecting craft {craft.WorkshopItemId}");
         var selectCraft = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 1 },
+            new() { Type = AtkValueType.Int, Int = 1 },
             new() { Type = 0, Int = 0 },
             new() { Type = 0, Int = 0 },
             new() { Type = 0, Int = 0 },
-            new() { Type = ValueType.UInt, UInt = craft.WorkshopItemId },
+            new() { Type = AtkValueType.UInt, UInt = craft.WorkshopItemId },
             new() { Type = 0, Int = 0 },
             new() { Type = 0, Int = 0 },
             new() { Type = 0, Int = 0 }

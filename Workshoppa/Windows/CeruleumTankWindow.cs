@@ -9,7 +9,7 @@ using Workshoppa.GameUI;
 using Workshoppa.Shop.Model;
 using Workshoppa.External;
 using Workshoppa.ImGuiwindows;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace Workshoppa.Windows;
 
@@ -141,9 +141,9 @@ internal sealed class CeruleumTankWindow : ShopWindow
     {
         var buyItem = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 0 },
-            new() { Type = ValueType.UInt, UInt = (uint)Shop.ItemForSale!.Position },
-            new() { Type = ValueType.UInt, UInt = (uint)buyNow },
+            new() { Type = AtkValueType.Int, Int = 0 },
+            new() { Type = AtkValueType.UInt, UInt = (uint)Shop.ItemForSale!.Position },
+            new() { Type = AtkValueType.UInt, UInt = (uint)buyNow },
         };
         addonShop->FireCallback(3, buyItem);
     }

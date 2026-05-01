@@ -30,26 +30,11 @@ public abstract class LWindow : Window
         }
     }
 
-    protected int? Alpha
-    {
-        get
-        {
-            float? value = InternalAlpha(this);
-            return (int?)(10_0000 * value);
-        }
-        set => InternalAlpha(this) = value / 10_0000f;
-    }
-
     private void LoadWindowConfig()
     {
         if (this is IPersistableWindowConfig pwc)
         {
             WindowConfig? config = pwc.WindowConfig;
-            if (config != null)
-            {
-                Alpha = config.Alpha;
-            }
-
             _initializedConfig = true;
         }
     }
@@ -71,12 +56,6 @@ public abstract class LWindow : Window
                 if (AllowClickthrough && config.IsClickthrough != IsClickthrough)
                 {
                     config.IsClickthrough = IsClickthrough;
-                    changed = true;
-                }
-
-                if (config.Alpha != Alpha)
-                {
-                    config.Alpha = Alpha;
                     changed = true;
                 }
 

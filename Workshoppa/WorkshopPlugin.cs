@@ -21,7 +21,7 @@ public sealed partial class WorkshopPlugin : IDalamudPlugin
     private readonly IReadOnlyList<uint> _fabricationStationIds =
         new uint[] { 2005236, 2005238, 2005240, 2007821, 2011588 }.AsReadOnly();
 
-    internal readonly IReadOnlyList<ushort> WorkshopTerritories = new ushort[] { 423, 424, 425, 653, 984 }.AsReadOnly();
+    internal readonly IReadOnlyList<uint> WorkshopTerritories = new uint[] { 423, 424, 425, 653, 984 }.AsReadOnly();
     private readonly WindowSystem _windowSystem = new WindowSystem(nameof(WorkshopPlugin));
 
     private readonly IDalamudPluginInterface _pluginInterface;

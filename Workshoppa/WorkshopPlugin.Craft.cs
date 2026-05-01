@@ -6,7 +6,7 @@ using FFXIVClientStructs.FFXIV.Client.Game;
 using FFXIVClientStructs.FFXIV.Client.UI;
 using FFXIVClientStructs.FFXIV.Component.GUI;
 using Workshoppa.GameData;
-using ValueType = FFXIVClientStructs.FFXIV.Component.GUI.ValueType;
+using ValueType = FFXIVClientStructs.FFXIV.Component.GUI;
 
 namespace Workshoppa;
 
@@ -137,9 +137,9 @@ partial class WorkshopPlugin
             _contributingItemId = item.ItemId;
             var contributeMaterial = stackalloc AtkValue[]
             {
-                new() { Type = ValueType.Int, Int = 0 },
-                new() { Type = ValueType.UInt, Int = i },
-                new() { Type = ValueType.UInt, UInt = item.ItemCountPerStep },
+                new() { Type = AtkValueType.Int, Int = 0 },
+                new() { Type = AtkValueType.UInt, Int = i },
+                new() { Type = AtkValueType.UInt, UInt = item.ItemCountPerStep },
                 new() { Type = 0, Int = 0 }
             };
             addonMaterialDelivery->FireCallback(4, contributeMaterial);
@@ -163,10 +163,10 @@ partial class WorkshopPlugin
         CurrentStage = Stage.OpenRequestItemSelect;
         var contributeMaterial = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 2 },
-            new() { Type = ValueType.UInt, Int = 0 },
-            new() { Type = ValueType.UInt, UInt = 44 },
-            new() { Type = ValueType.UInt, UInt = 0 }
+            new() { Type = AtkValueType.Int, Int = 2 },
+            new() { Type = AtkValueType.UInt, Int = 0 },
+            new() { Type = AtkValueType.UInt, UInt = 44 },
+            new() { Type = AtkValueType.UInt, UInt = 0 }
         };
         addonRequest->AtkUnitBase.FireCallback(4, contributeMaterial);
     }
@@ -179,10 +179,10 @@ partial class WorkshopPlugin
         CurrentStage = Stage.ConfirmRequestItemWindow;
         var selectSlot = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 0 },
-            new() { Type = ValueType.Int, Int = 0 /* slot */ },
-            new() { Type = ValueType.UInt, UInt = 20802 /* probably the item's icon */ },
-            new() { Type = ValueType.UInt, UInt = 0 },
+            new() { Type = AtkValueType.Int, Int = 0 },
+            new() { Type = AtkValueType.Int, Int = 0 /* slot */ },
+            new() { Type = AtkValueType.UInt, UInt = 20802 /* probably the item's icon */ },
+            new() { Type = AtkValueType.UInt, UInt = 0 },
             new() { Type = 0, Int = 0 },
         };
         ((AddonContextIconMenu*)addon.Addon.Address)->AtkUnitBase.FireCallback(5, selectSlot);
@@ -201,10 +201,10 @@ partial class WorkshopPlugin
         CurrentStage = Stage.ConfirmMaterialDelivery;
         var closeWindow = stackalloc AtkValue[]
         {
-            new() { Type = ValueType.Int, Int = 0 },
-            new() { Type = ValueType.UInt, UInt = 0 },
-            new() { Type = ValueType.UInt, UInt = 0 },
-            new() { Type = ValueType.UInt, UInt = 0 }
+            new() { Type = AtkValueType.Int, Int = 0 },
+            new() { Type = AtkValueType.UInt, UInt = 0 },
+            new() { Type = AtkValueType.UInt, UInt = 0 },
+            new() { Type = AtkValueType.UInt, UInt = 0 }
         };
         addonRequest->AtkUnitBase.FireCallback(4, closeWindow);
         addonRequest->AtkUnitBase.Close(false);
